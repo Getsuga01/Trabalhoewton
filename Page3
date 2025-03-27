@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RouTask</title>
+    <style>
+        :root {
+            --sidebar-bg: #ffffff;
+            --sidebar-text: #2d3748;
+            --sidebar-hover: #f0f4f8;
+            --main-bg: #ffffff;
+            --card-bg: #ffffff;
+            --card-shadow: rgba(0, 0, 0, 0.08);
+            --border-color: #e0e4e8;
+            --text-primary: #2d3748;
+            --text-secondary: #4a5568;
+            --accent-blue: #3182ce;
+            --button-gray: #a0aec0;
+            --view-pill: #e2e8f0;
+            --sprint-bg: #f0f4f8;
+            --footer-bg: #ffffff;
+            
+            /* Cores para os status */
+            --status-01: #48bb78;
+            --status-02: #4299e1;
+            --status-03: #9f7aea;
+            --status-04: #ed8936;
+            --status-text: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        body {
+            background-color: var(--main-bg);
+            color: var(--text-primary);
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Barra lateral expandida */
+        .sidebar {
+            width: 300px;
+            background-color: var(--sidebar-bg);
+            color: var(--sidebar-text);
+            padding: 20px 15px;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--border-color);
+            overflow-y: auto;
+        }
+        
+        .logo {
+            font-size: 20px;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 25px;
+            padding: 10px 0;
+        }
+        
+        /* Seção de navegação principal */
+        .main-nav {
+            margin-bottom: 25px;
+        }
+        
+        .nav-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            padding-left: 5px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        
+        .menu-item {
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+            border-radius: 4px;
+            margin-bottom: 2px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .menu-item:hover {
+            background-color: var(--sidebar-hover);
+        }
+        
+        .menu-item i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        /* Seções na sidebar */
+        .sidebar-section {
+            margin-bottom: 25px;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .section-title {
+            font-size: 15px;
+            font-weight: 600;
+        }
+        
+        .add-btn {
+            width: 24px;
+            height: 24px;
+            background-color: var(--button-gray);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Estilos para abas */
+        .tab-container {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 15px;
+        }
+        
+        .tab {
+            padding: 6px 12px;
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            font-size: 14px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .tab.active {
+            border-bottom: 2px solid var(--accent-blue);
+            color: var(--accent-blue);
+            font-weight: 600;
+        }
+        
+        .tab:hover:not(.active) {
+            color: var(--accent-blue);
+        }
+        
+        /* Estilos para conteúdo das abas */
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Estilos para itens de lista */
+        .task {
+            padding: 8px 0;
+            font-size: 14px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .task:hover {
+            background-color: var(--sidebar-hover);
+        }
+        
+        .version-item {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .version-item:hover {
+            background-color: var(--sidebar-hover);
+        }
+        
+        .sprint-item {
+            padding: 10px;
+            background-color: var(--sprint-bg);
+            border-radius: 4px;
+            margin-bottom: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .sprint-item:hover {
+            transform: translateX(5px);
+        }
+        
+        .current-sprint {
+            padding: 10px;
+            background-color: var(--sprint-bg);
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        /* Conteúdo principal */
+        .main-content {
+            flex: 1;
+            padding: 20px 25px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .view-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .view-label {
+            font-size: 14px;
+            font-weight: 600;
+            margin-right: 15px;
+        }
+        
+        .view-type {
+            font-size: 14px;
+            padding: 4px 12px;
+            background-color: var(--view-pill);
+            border-radius: 4px;
+        }
+        
+        .project-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .project-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-right: 20px;
+        }
+        
+        .search-filter {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .search-box {
+            padding: 6px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 14px;
+            width: 140px;
+        }
+        
+        .filter-select {
+            padding: 6px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .project-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .columns-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .column {
+            flex: 1;
+            background-color: var(--card-bg);
+            border-radius: 6px;
+            box-shadow: 0 1px 3px var(--card-shadow);
+            min-height: 120px;
+        }
+        
+        .column-header {
+            padding: 10px 12px;
+            border-radius: 6px 6px 0 0;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--status-text);
+        }
+        
+        .column:nth-child(1) .column-header {
+            background-color: var(--status-01);
+        }
+        
+        .column:nth-child(2) .column-header {
+            background-color: var(--status-02);
+        }
+        
+        .column:nth-child(3) .column-header {
+            background-color: var(--status-03);
+        }
+        
+        .column:nth-child(4) .column-header {
+            background-color: var(--status-04);
+        }
+        
+        .add-column {
+            background-color: var(--main-bg);
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        
+        .add-column .column-header {
+            background-color: transparent;
+            color: var(--text-secondary);
+            border: 1px dashed var(--border-color);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 12px;
+            background-color: var(--footer-bg);
+            color: var(--text-primary);
+            font-size: 14px;
+            border-top: 1px solid var(--border-color);
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <!-- Barra lateral expandida -->
+    <aside class="sidebar">
+        <div class="logo">RouTask</div>
+        
+        <!-- Navegação principal -->
+        <div class="main-nav">
+            <div class="nav-title">NAVEGAÇÃO</div>
+            <div class="menu-item">
+                <i class="fas fa-folder"></i> Projetos
+            </div>
+            <div class="menu-item">
+                <i class="fas fa-users"></i> Equipes
+            </div>
+            <div class="menu-item">
+                <i class="fas fa-list-alt"></i> Planos
+            </div>
+            <div class="menu-item">
+                <i class="fas fa-route"></i> RouterFlow
+            </div>
+            <div class="menu-item">
+                <i class="fas fa-share-alt"></i> Compartilhar
+            </div>
+        </div>
+        
+        <!-- Calendário/Tabela na sidebar -->
+        <div class="sidebar-section">
+            <div class="section-header">
+                <div class="section-title">VISUALIZAÇÃO</div>
+            </div>
+            <div class="tab-container">
+                <button class="tab active" onclick="switchTab('calendar')">Calendário</button>
+                <button class="tab" onclick="switchTab('table')">Tabela</button>
+            </div>
+            
+            <div id="calendar-tab" class="tab-content active">
+                <div class="task">TIP/000 - TweAb</div>
+                <div class="task">BLA0013 - TweAs</div>
+                <div class="task">TIP/000 - TweAb</div>
+                <div class="task">TIP/000 - TweAb</div>
+                <div class="task">SBI7044 - TweAs</div>
+                <div style="text-align: right; margin-top: 10px;">
+                    <button class="add-btn">+</button>
+                </div>
+            </div>
+            
+            <div id="table-tab" class="tab-content">
+                <div class="task"><i class="fas fa-table"></i> Tabela de Tarefas</div>
+                <div class="task"><i class="fas fa-filter"></i> Filtros Avançados</div>
+                <div class="task"><i class="fas fa-sort"></i> Ordenar por</div>
+                <div class="task"><i class="fas fa-columns"></i> Colunas Personalizadas</div>
+                <div style="text-align: right; margin-top: 10px;">
+                    <button class="add-btn">+</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sprints na sidebar -->
+        <div class="sidebar-section">
+            <div class="section-header">
+                <div class="section-title">SPRINTS</div>
+                <button class="add-btn">+</button>
+            </div>
+            <div class="current-sprint">TIP/000 - TweAs</div>
+            <div class="sprint-item">None sprint 01</div>
+            <div class="sprint-item">None sprint 02</div>
+            <div class="sprint-item">None sprint 03</div>
+        </div>
+        
+        <!-- Versionamento na sidebar -->
+        <div class="sidebar-section">
+            <div class="section-header">
+                <div class="section-title">VERSIONAMENTO</div>
+                <button class="add-btn">+</button>
+            </div>
+            <div class="version-item">Versão 1.0.0</div>
+            <div class="version-item">Versão 1.1.0</div>
+            <div class="version-item">Versão 2.0.0</div>
+        </div>
+        
+        <!-- Configurações do projeto -->
+        <div class="sidebar-section">
+            <div class="section-header">
+                <div class="section-title">CONFIGURAÇÕES</div>
+            </div>
+            <div class="menu-item">
+                <i class="fas fa-cog"></i> Configurações do projeto
+            </div>
+            <div class="menu-item">
+                <i class="fas fa-sliders-h"></i> Preferências
+            </div>
+            <div class="menu-item">
+                <i class="fas fa-info-circle"></i> Sobre
+            </div>
+        </div>
+    </aside>
+
+    <!-- Conteúdo principal -->
+    <main class="main-content">
+        <div class="view-header">
+            <div class="view-label">PROJETO ATIVO</div>
+            <div class="view-type">RouteSync</div>
+        </div>
+
+        <div class="project-header">
+            <button class="add-btn">+</button>
+            <div class="project-title">NOME PROJETO</div>
+            <div class="search-filter">
+                <input type="text" class="search-box" placeholder="Pesquisar">
+                <select class="filter-select">
+                    <option>Filtros classe</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="columns-container">
+            <div class="column">
+                <div class="column-header">Name Status01</div>
+            </div>
+            <div class="column">
+                <div class="column-header">Name Status02</div>
+            </div>
+            <div class="column">
+                <div class="column-header">Name Status03</div>
+            </div>
+            <div class="column">
+                <div class="column-header">Name Status04</div>
+            </div>
+            <div class="column add-column">
+                <div class="column-header">Nova coluna</div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        sobre nós
+    </footer>
+
+    <script>
+        function switchTab(tabId) {
+            // Desativa todas as abas
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Ativa a aba selecionada
+            document.querySelector(`.tab[onclick="switchTab('${tabId}')"]`).classList.add('active');
+            document.getElementById(`${tabId}-tab`).classList.add('active');
+        }
+    </script>
+</body>
+</html>
